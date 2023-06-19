@@ -1,0 +1,30 @@
+name: OPA Testing with Terraform
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  opa_testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Install OPA
+        run: |
+          wget https://github.com/open-policy-agent/opa/releases/latest/download/opa_linux_amd64
+          chmod +x opa_linux_amd64
+          sudo mv opa_linux_amd64 /usr/local/bin/opa
+
+      - name: Run OPA tests
+        run: |
+          opa test -v -b path/to/terraform/modules
